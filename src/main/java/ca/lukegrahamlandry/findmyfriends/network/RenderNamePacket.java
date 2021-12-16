@@ -5,6 +5,7 @@ import ca.lukegrahamlandry.findmyfriends.ModMain;
 import ca.lukegrahamlandry.findmyfriends.entity.NamePlateEntity;
 import ca.lukegrahamlandry.findmyfriends.init.EntityInit;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -57,27 +58,26 @@ public class RenderNamePacket {
         context.get().enqueueWork(() -> {
             PlayerEntity player = Minecraft.getInstance().player;
             if (player == null || player.level == null) return;
-            World world = player.level;
+            ClientWorld world = (ClientWorld) player.level;
+            System.out.println("handle " + msg.name.getContents() + " " + msg.x + " " + msg.y + " " + msg.z);
 
-            NamePlateEntity namePlate = ModMain.namePlates.getOrDefault(msg.uuid, makeName(msg, world));
+            NamePlateEntity oldNamePlate = ModMain.namePlates.get(msg.uuid);
+            if (oldNamePlate != null) oldNamePlate.remove();
+
+            // making a new one every time so that if you teleported it will be added properly. not sure this is nessisary. consider memoizing with ModMain.namePlates
+            NamePlateEntity namePlate = new NamePlateEntity(EntityInit.NAME_PLATE.get(), world);
+            namePlate.setCustomName(msg.name);
+            ModMain.namePlates.put(msg.uuid, namePlate);
+            namePlate.setPos(player.getX(), player.getY(), player.getZ());
+            world.putNonPlayerEntity(429487, namePlate);
 
             // move it to the right location
-            Vector3d targetPlayer = new Vector3d(msg.x, msg.y, msg.z);
-            Vector3d direction = targetPlayer.subtract(player.getEyePosition(0));
-            direction = direction.normalize().scale(ClientFindConfig.getFakeNameDisplayDistance());
-            Vector3d position = player.position().add(direction);
-            namePlate.setPos(position.x, position.y, position.z);
+            namePlate.setCustomName(msg.name);
+            namePlate.targetPlayer = new Vector3d(msg.x, msg.y, msg.z);
+
 
         });
         context.get().setPacketHandled(true);
-    }
-
-    private static NamePlateEntity makeName(RenderNamePacket msg, World world) {
-        NamePlateEntity namePlate = new NamePlateEntity(EntityInit.NAME_PLATE.get(), world);
-        namePlate.setCustomName(msg.name);
-        ModMain.namePlates.put(msg.uuid, namePlate);
-        world.addFreshEntity(namePlate);
-        return namePlate;
     }
 }
 

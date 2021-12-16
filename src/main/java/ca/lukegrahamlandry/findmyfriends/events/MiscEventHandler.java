@@ -14,6 +14,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.world.SleepFinishedTimeEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
@@ -22,23 +23,16 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.UUID;
 
-@Mod.EventBusSubscriber(modid = ModMain.MOD_ID)
+@Mod.EventBusSubscriber(modid = ModMain.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MiscEventHandler {
-    public static MinecraftServer server;
-    @SubscribeEvent
-    public static void saveServer(FMLServerStartedEvent event){
-        server = event.getServer();
-    }
-
-    static final double[] pos = new double[]{20, -20};
+    static final double[] pos = new double[]{0};
     static final Random rand = new Random();
 
     @SubscribeEvent
-    public static void onSleep(TickEvent.WorldTickEvent event){
-        if (event.phase == TickEvent.Phase.END) return;
+    public static void onTick(TickEvent.WorldTickEvent event){
+        if (event.phase == TickEvent.Phase.END || event.side == LogicalSide.CLIENT) return;
 
         if (event.world.getGameTime() % ServerFindConfig.getUpdateInterval() != 0) return;
-
 
         ArrayList<RenderNamePacket> packets = new ArrayList<>();
         for (PlayerEntity player : event.world.players()){

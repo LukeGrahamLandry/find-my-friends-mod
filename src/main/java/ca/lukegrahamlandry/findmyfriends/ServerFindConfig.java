@@ -30,6 +30,6 @@ public class ServerFindConfig {
     }
 
     public static long getUpdateInterval() {
-        return 20;
+        return 150;
     }
 }

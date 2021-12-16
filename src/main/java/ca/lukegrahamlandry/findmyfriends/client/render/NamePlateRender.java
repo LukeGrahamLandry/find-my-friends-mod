@@ -21,9 +21,8 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
 
     public void render(NamePlateEntity entity, float p_225623_2_, float p_225623_3_, MatrixStack matrix, IRenderTypeBuffer renderType, int ticks) {
         ITextComponent name = entity.getName();
-        System.out.println(name.getString());
 
-        boolean flag = !entity.isDiscrete();
+        // boolean flag = !entity.isDiscrete();
         float f = entity.getBbHeight() + 0.5F;
         int i = "deadmau5".equals(name.getString()) ? -10 : 0;
         matrix.pushPose();
@@ -35,10 +34,16 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
         int j = (int)(f1 * 255.0F) << 24;
         FontRenderer fontrenderer = this.getFont();
         float f2 = (float)(-fontrenderer.width(name) / 2);
-        fontrenderer.drawInBatch(name, f2, (float)i, 553648127, false, matrix4f, renderType, flag, j, ticks);
-        if (flag) {
-            fontrenderer.drawInBatch(name, f2, (float)i, -1, false, matrix4f, renderType, false, 0, ticks);
-        }
+
+        fontrenderer.drawInBatch(name, f2, (float)i, 553648127, false, matrix4f, renderType, true, j, ticks);
+        fontrenderer.drawInBatch(name, f2, (float)i, -1, false, matrix4f, renderType, false, 0, ticks);
+
+        name = new StringTextComponent(Math.round(entity.dist) + " blocks away");
+        f2 = (float)(-fontrenderer.width(name) / 2);
+        // fontrenderer.drawInBatch(name, f2, (float)i + 2, 553648127, false, matrix4f, renderType, true, j, ticks);
+        matrix.scale(0.75F, 0.75F, 0.75F);
+        fontrenderer.drawInBatch(name, f2, (float)i - 10, 0x03ecfc, false, matrix4f, renderType, false, 0, ticks);
+
 
         matrix.popPose();
     }
