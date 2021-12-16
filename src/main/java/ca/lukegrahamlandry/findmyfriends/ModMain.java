@@ -14,8 +14,13 @@ import java.util.UUID;
 public class ModMain {
     public static final String MOD_ID = "findmyfriends";
 
+    public static HashMap<UUID, NamePlateEntity> namePlates = new HashMap<>();
 
     public ModMain() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        EntityInit.ENTITY.register(modEventBus);
+        NetworkInit.registerPackets();
+
+        ServerFindConfig.init();
     }
 }
