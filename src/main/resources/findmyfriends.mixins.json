@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "ca.lukegrahamlandry.findmyfriends.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "findmyfriends.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "minVersion": "0.8"
+}
