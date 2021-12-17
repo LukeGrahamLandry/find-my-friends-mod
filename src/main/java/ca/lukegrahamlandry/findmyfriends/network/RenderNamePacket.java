@@ -1,18 +1,17 @@
 package ca.lukegrahamlandry.findmyfriends.network;
 
-import ca.lukegrahamlandry.findmyfriends.ClientFindConfig;
 import ca.lukegrahamlandry.findmyfriends.ModMain;
 import ca.lukegrahamlandry.findmyfriends.entity.NamePlateEntity;
 import ca.lukegrahamlandry.findmyfriends.init.EntityInit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.world.World;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.fml.network.NetworkEvent;
 
 import java.util.UUID;
@@ -56,28 +55,32 @@ public class RenderNamePacket {
 
     public static void handle(RenderNamePacket msg, Supplier<NetworkEvent.Context> context) {
         context.get().enqueueWork(() -> {
-            PlayerEntity player = Minecraft.getInstance().player;
-            if (player == null || player.level == null) return;
-            ClientWorld world = (ClientWorld) player.level;
-            System.out.println("handle " + msg.name.getContents() + " " + msg.x + " " + msg.y + " " + msg.z);
-
-            NamePlateEntity oldNamePlate = ModMain.namePlates.get(msg.uuid);
-            if (oldNamePlate != null) oldNamePlate.remove();
-
-            // making a new one every time so that if you teleported it will be added properly. not sure this is nessisary. consider memoizing with ModMain.namePlates
-            NamePlateEntity namePlate = new NamePlateEntity(EntityInit.NAME_PLATE.get(), world);
-            namePlate.setCustomName(msg.name);
-            ModMain.namePlates.put(msg.uuid, namePlate);
-            namePlate.setPos(player.getX(), player.getY(), player.getZ());
-            world.putNonPlayerEntity(429487, namePlate);
-
-            // move it to the right location
-            namePlate.setCustomName(msg.name);
-            namePlate.targetPlayer = new Vector3d(msg.x, msg.y, msg.z);
-
-
+            handlePacket(msg);
         });
         context.get().setPacketHandled(true);
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    private static void handlePacket(RenderNamePacket msg) {
+        PlayerEntity player = Minecraft.getInstance().player;
+        if (player == null || player.level == null) return;
+        ClientWorld world = (ClientWorld) player.level;
+        System.out.println("handle " + msg.name.getContents() + " " + msg.x + " " + msg.y + " " + msg.z);
+
+        NamePlateEntity oldNamePlate = ModMain.namePlates.get(msg.uuid);
+        if (oldNamePlate != null) oldNamePlate.remove();
+
+        // making a new one every time so that if you teleported it will be added properly. not sure this is nessisary. consider memoizing with ModMain.namePlates
+        NamePlateEntity namePlate = new NamePlateEntity(EntityInit.NAME_PLATE.get(), world);
+        namePlate.setCustomName(msg.name);
+        ModMain.namePlates.put(msg.uuid, namePlate);
+
+        // move it to the right location
+        namePlate.setCustomName(msg.name);
+        namePlate.targetPlayer = new Vector3d(msg.x, msg.y, msg.z);
+        namePlate.updateLocation();
+
+        world.putNonPlayerEntity(namePlate.getId(), namePlate);
     }
 }
 

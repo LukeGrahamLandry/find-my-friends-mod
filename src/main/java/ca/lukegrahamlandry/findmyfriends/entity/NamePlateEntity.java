@@ -9,7 +9,8 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 
 // will only exist on the client
@@ -25,18 +26,18 @@ public class NamePlateEntity extends Entity {
     public void tick() {
         super.tick();
         if (!this.level.isClientSide) remove();
+        else this.updateLocation();
+    }
 
+    @OnlyIn(Dist.CLIENT)
+    public void updateLocation() {
         // move to the right place relitive to the viewer
         PlayerEntity player = Minecraft.getInstance().player;
-
         Vector3d direction = targetPlayer.subtract(player.getEyePosition(0));
         this.dist = direction.length();
-
         direction = direction.normalize().scale(ClientFindConfig.getFakeNameDisplayDistance());
         Vector3d position = player.position().add(direction);
         this.setPos(position.x, position.y, position.z);
-
-
     }
 
     @Override

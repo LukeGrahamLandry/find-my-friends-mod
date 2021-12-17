@@ -44,7 +44,6 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
         matrix.scale(0.75F, 0.75F, 0.75F);
         fontrenderer.drawInBatch(name, f2, (float)i - 10, 0x03ecfc, false, matrix4f, renderType, false, 0, ticks);
 
-
         matrix.popPose();
     }
 
