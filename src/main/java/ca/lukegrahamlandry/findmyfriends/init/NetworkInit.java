@@ -18,5 +18,6 @@ public class NetworkInit {
         INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(ModMain.MOD_ID, "findmyfriends"), () -> "1.0", s -> true, s -> true);
 
         INSTANCE.registerMessage(nextID(), RenderNamePacket.class, RenderNamePacket::toBytes, RenderNamePacket::new, RenderNamePacket::handle);
+        INSTANCE.registerMessage(nextID(), ClearNamePacket.class, ClearNamePacket::toBytes, ClearNamePacket::new, ClearNamePacket::handle);
     }
 }

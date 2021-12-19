@@ -3,10 +3,14 @@ package ca.lukegrahamlandry.findmyfriends.events;
 import ca.lukegrahamlandry.findmyfriends.ModMain;
 import ca.lukegrahamlandry.findmyfriends.ServerFindConfig;
 import ca.lukegrahamlandry.findmyfriends.init.NetworkInit;
+import ca.lukegrahamlandry.findmyfriends.network.ClearNamePacket;
 import ca.lukegrahamlandry.findmyfriends.network.RenderNamePacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
@@ -48,6 +52,30 @@ public class MiscEventHandler {
                     NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event){
+        if (event.getPlayer().level.isClientSide()) return;
+
+        ClearNamePacket packet = new ClearNamePacket((ServerPlayerEntity) event.getPlayer());
+        for (PlayerEntity player : event.getPlayer().level.players()){
+            NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onDimension(PlayerEvent.PlayerChangedDimensionEvent event){
+        if (event.getPlayer().level.isClientSide()) return;
+
+        ClearNamePacket packet = new ClearNamePacket((ServerPlayerEntity) event.getPlayer());
+
+        World fromWorld = ((ServerWorld)event.getPlayer().level).getServer().getLevel(event.getFrom());
+        if (fromWorld == null) return;
+
+        for (PlayerEntity player : fromWorld.players()){
+            NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
         }
     }
 }
