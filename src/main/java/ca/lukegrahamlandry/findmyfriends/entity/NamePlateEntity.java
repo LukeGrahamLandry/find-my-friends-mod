@@ -12,11 +12,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
+import java.util.UUID;
+
 
 // will only exist on the client
 public class NamePlateEntity extends Entity {
-    public Vector3d targetPlayer;
+    public Vector3d targetPosition;
     public double dist = 0;
+    public UUID targetUUID;
+    public boolean showDist = true;
 
     public NamePlateEntity(EntityType<?> p_i48580_1_, World p_i48580_2_) {
         super(p_i48580_1_, p_i48580_2_);
@@ -33,7 +37,7 @@ public class NamePlateEntity extends Entity {
     public void updateLocation() {
         // move to the right place relitive to the viewer
         PlayerEntity player = Minecraft.getInstance().player;
-        Vector3d direction = targetPlayer.subtract(player.getEyePosition(0));
+        Vector3d direction = targetPosition.subtract(player.getEyePosition(0));
         this.dist = direction.length();
         direction = direction.normalize().scale(ClientFindConfig.getFakeNameDisplayDistance());
         Vector3d position = player.position().add(direction);

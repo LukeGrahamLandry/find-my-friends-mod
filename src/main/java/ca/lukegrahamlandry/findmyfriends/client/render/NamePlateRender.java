@@ -9,10 +9,13 @@ import net.minecraft.client.renderer.culling.ClippingHelper;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.common.ForgeMod;
 
 public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
     public NamePlateRender(EntityRendererManager p_i46179_1_) {
@@ -20,6 +23,10 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
     }
 
     public void render(NamePlateEntity entity, float p_225623_2_, float p_225623_3_, MatrixStack matrix, IRenderTypeBuffer renderType, int ticks) {
+        PlayerEntity target = entity.level.getPlayerByUUID(entity.targetUUID); // can be null
+        boolean showsVanillaName = ForgeHooksClient.isNameplateInRenderDistance(target, entity.dist*entity.dist);
+        if (showsVanillaName) return;
+
         ITextComponent name = entity.getName();
 
         // boolean flag = !entity.isDiscrete();
@@ -38,11 +45,13 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
         fontrenderer.drawInBatch(name, f2, (float)i, 553648127, false, matrix4f, renderType, true, j, ticks);
         fontrenderer.drawInBatch(name, f2, (float)i, -1, false, matrix4f, renderType, false, 0, ticks);
 
-        name = new StringTextComponent(Math.round(entity.dist) + " blocks away");
-        f2 = (float)(-fontrenderer.width(name) / 2);
-        // fontrenderer.drawInBatch(name, f2, (float)i + 2, 553648127, false, matrix4f, renderType, true, j, ticks);
-        matrix.scale(0.75F, 0.75F, 0.75F);
-        fontrenderer.drawInBatch(name, f2, (float)i - 10, 0x03ecfc, false, matrix4f, renderType, false, 0, ticks);
+        if (entity.showDist){
+            name = new StringTextComponent(Math.round(entity.dist) + " blocks away");
+            f2 = (float)(-fontrenderer.width(name) / 2);
+            // fontrenderer.drawInBatch(name, f2, (float)i + 2, 553648127, false, matrix4f, renderType, true, j, ticks);
+            matrix.scale(0.75F, 0.75F, 0.75F);
+            fontrenderer.drawInBatch(name, f2, (float)i - 10, 0x03ecfc, false, matrix4f, renderType, false, 0, ticks);
+        }
 
         matrix.popPose();
     }
