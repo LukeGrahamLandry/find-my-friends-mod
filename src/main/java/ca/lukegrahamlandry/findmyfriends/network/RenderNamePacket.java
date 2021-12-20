@@ -26,14 +26,16 @@ public class RenderNamePacket {
     public final UUID uuid;
     public final ITextComponent name;
     public final boolean showDist;
+    public final int timeout;
 
-    public RenderNamePacket(double x, double y, double z, UUID uuid, ITextComponent name, boolean showDist) {
+    public RenderNamePacket(double x, double y, double z, UUID uuid, ITextComponent name, boolean showDist, int timeout) {
         this.x = x;
         this.y = y;
         this.z = z;
         this.uuid = uuid;
         this.name = name;
         this.showDist = showDist;
+        this.timeout = timeout;
     }
 
     public RenderNamePacket(ServerPlayerEntity player) {
@@ -43,10 +45,11 @@ public class RenderNamePacket {
         this.uuid = player.getUUID();
         this.name = player.getName();
         this.showDist = ServerFindConfig.showDistance.get();
+        this.timeout = ServerFindConfig.getUpdateInterval();
     }
 
     public RenderNamePacket(PacketBuffer buf) {
-        this(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readUUID(), buf.readComponent(), buf.readBoolean());
+        this(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readUUID(), buf.readComponent(), buf.readBoolean(), buf.readInt());
     }
 
     public static void toBytes(RenderNamePacket msg, PacketBuffer buf) {
@@ -56,6 +59,7 @@ public class RenderNamePacket {
         buf.writeUUID(msg.uuid);
         buf.writeComponent(msg.name);
         buf.writeBoolean(msg.showDist);
+        buf.writeInt(msg.timeout);
     }
 
     public static void handle(RenderNamePacket msg, Supplier<NetworkEvent.Context> context) {
@@ -70,7 +74,6 @@ public class RenderNamePacket {
         PlayerEntity player = Minecraft.getInstance().player;
         if (player == null || player.level == null) return;
         ClientWorld world = (ClientWorld) player.level;
-        // System.out.println("handle " + msg.name.getContents() + " " + msg.x + " " + msg.y + " " + msg.z);
 
         NamePlateEntity oldNamePlate = ModMain.namePlates.get(msg.uuid);
         if (oldNamePlate != null) oldNamePlate.remove();
@@ -80,6 +83,7 @@ public class RenderNamePacket {
         namePlate.setCustomName(msg.name);
         namePlate.targetUUID = msg.uuid;
         namePlate.showDist = msg.showDist;
+        namePlate.timeout += msg.timeout;
         ModMain.namePlates.put(msg.uuid, namePlate);
 
         // move it to the right location

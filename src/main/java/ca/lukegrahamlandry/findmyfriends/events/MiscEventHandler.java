@@ -10,6 +10,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
@@ -18,6 +19,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = ModMain.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MiscEventHandler {
@@ -53,6 +55,7 @@ public class MiscEventHandler {
                 }
             }
         }
+
     }
 
     @SubscribeEvent
@@ -77,5 +80,19 @@ public class MiscEventHandler {
         for (PlayerEntity player : fromWorld.players()){
             NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
         }
+    }
+
+    @SubscribeEvent
+    public static void onDeath(LivingDeathEvent event){
+        if (event.getEntity().level.isClientSide()) return;
+
+        if (event.getEntity() instanceof PlayerEntity){
+            ClearNamePacket packet = new ClearNamePacket((ServerPlayerEntity) event.getEntity());
+
+            for (PlayerEntity player : event.getEntity().level.players()){
+                NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
+            }
+        }
+
     }
 }

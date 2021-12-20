@@ -47,7 +47,10 @@ public class ClearNamePacket {
 
     @OnlyIn(Dist.CLIENT)
     private static void handlePacket(ClearNamePacket msg) {
-        ModMain.namePlates.remove(msg.uuid);
+        if (ModMain.namePlates.get(msg.uuid) != null){
+            ModMain.namePlates.get(msg.uuid).remove();
+            ModMain.namePlates.remove(msg.uuid);
+        }
     }
 }
 

@@ -49,7 +49,7 @@ public class ServerFindConfig {
         server_config.setConfig(file);
     }
 
-    public static long getUpdateInterval() {
+    public static int getUpdateInterval() {
         return updateInterval.get();
     }
 }

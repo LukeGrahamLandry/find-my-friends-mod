@@ -1,6 +1,7 @@
 package ca.lukegrahamlandry.findmyfriends.entity;
 
 import ca.lukegrahamlandry.findmyfriends.ClientFindConfig;
+import ca.lukegrahamlandry.findmyfriends.ModMain;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -21,6 +22,7 @@ public class NamePlateEntity extends Entity {
     public double dist = 0;
     public UUID targetUUID;
     public boolean showDist = true;
+    public int timeout = 20;
 
     public NamePlateEntity(EntityType<?> p_i48580_1_, World p_i48580_2_) {
         super(p_i48580_1_, p_i48580_2_);
@@ -30,11 +32,28 @@ public class NamePlateEntity extends Entity {
     public void tick() {
         super.tick();
         if (!this.level.isClientSide) remove();
-        else this.updateLocation();
+        else {
+            this.updateLocation();
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
     public void updateLocation() {
+        // when loaded on client, no lag time
+        PlayerEntity targetPlayer = this.level.getPlayerByUUID(this.targetUUID);
+        if (targetPlayer != null){
+            this.targetPosition = targetPlayer.position();
+        } else {
+            /*
+            this.timeout--;
+            if (this.timeout < 0){
+                ModMain.namePlates.remove(this.targetUUID);
+                this.remove();
+                return;
+            }
+             */
+        }
+
         // move to the right place relitive to the viewer
         PlayerEntity player = Minecraft.getInstance().player;
         Vector3d direction = targetPosition.subtract(player.position());
@@ -46,7 +65,6 @@ public class NamePlateEntity extends Entity {
             Vector3d position = player.position().add(direction);
             this.setPos(position.x, position.y, position.z);
         }
-
     }
 
     @Override
