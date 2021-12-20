@@ -12,5 +12,5 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class EntityInit {
     public static final DeferredRegister<EntityType<?>> ENTITY = DeferredRegister.create(ForgeRegistries.ENTITIES, ModMain.MOD_ID);
 
-    public static final RegistryObject<EntityType<NamePlateEntity>> NAME_PLATE = ENTITY.register("name_plate", () -> EntityType.Builder.of(NamePlateEntity::new, EntityClassification.CREATURE).sized(0.25F, 0.25F).build("name_plate"));
+    public static final RegistryObject<EntityType<NamePlateEntity>> NAME_PLATE = ENTITY.register("name_plate", () -> EntityType.Builder.of(NamePlateEntity::new, EntityClassification.CREATURE).sized(EntityType.PLAYER.getWidth(), EntityType.PLAYER.getHeight()).build("name_plate"));
 }

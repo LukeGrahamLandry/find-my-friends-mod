@@ -1,6 +1,7 @@
 package ca.lukegrahamlandry.findmyfriends.client.render;
 
 import ca.lukegrahamlandry.findmyfriends.entity.NamePlateEntity;
+import ca.lukegrahamlandry.findmyfriends.events.KeyboardEvents;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -23,9 +24,7 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
     }
 
     public void render(NamePlateEntity entity, float p_225623_2_, float p_225623_3_, MatrixStack matrix, IRenderTypeBuffer renderType, int ticks) {
-        PlayerEntity target = entity.level.getPlayerByUUID(entity.targetUUID); // can be null
-        boolean showsVanillaName = ForgeHooksClient.isNameplateInRenderDistance(target, entity.dist*entity.dist);
-        if (showsVanillaName) return;
+        if (!KeyboardEvents.isActive) return;
 
         ITextComponent name = entity.getName();
 

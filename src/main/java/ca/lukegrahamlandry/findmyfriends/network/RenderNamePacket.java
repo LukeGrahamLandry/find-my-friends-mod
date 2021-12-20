@@ -70,7 +70,7 @@ public class RenderNamePacket {
         PlayerEntity player = Minecraft.getInstance().player;
         if (player == null || player.level == null) return;
         ClientWorld world = (ClientWorld) player.level;
-        System.out.println("handle " + msg.name.getContents() + " " + msg.x + " " + msg.y + " " + msg.z);
+        // System.out.println("handle " + msg.name.getContents() + " " + msg.x + " " + msg.y + " " + msg.z);
 
         NamePlateEntity oldNamePlate = ModMain.namePlates.get(msg.uuid);
         if (oldNamePlate != null) oldNamePlate.remove();
@@ -84,7 +84,7 @@ public class RenderNamePacket {
 
         // move it to the right location
         namePlate.setCustomName(msg.name);
-        namePlate.targetPosition = new Vector3d(msg.x, msg.y + 2.5D, msg.z);
+        namePlate.targetPosition = new Vector3d(msg.x, msg.y, msg.z);
         namePlate.updateLocation();
 
         world.putNonPlayerEntity(namePlate.getId(), namePlate);

@@ -37,11 +37,16 @@ public class NamePlateEntity extends Entity {
     public void updateLocation() {
         // move to the right place relitive to the viewer
         PlayerEntity player = Minecraft.getInstance().player;
-        Vector3d direction = targetPosition.subtract(player.getEyePosition(0));
+        Vector3d direction = targetPosition.subtract(player.position());
         this.dist = direction.length();
-        direction = direction.normalize().scale(ClientFindConfig.getFakeNameDisplayDistance());
-        Vector3d position = player.position().add(direction);
-        this.setPos(position.x, position.y, position.z);
+        if (this.dist <= ClientFindConfig.getFakeNameDisplayDistance()){
+            this.setPos(targetPosition.x, targetPosition.y, targetPosition.z);
+        } else {
+            direction = direction.normalize().scale(ClientFindConfig.getFakeNameDisplayDistance());
+            Vector3d position = player.position().add(direction);
+            this.setPos(position.x, position.y, position.z);
+        }
+
     }
 
     @Override
