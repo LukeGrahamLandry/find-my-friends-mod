@@ -22,7 +22,6 @@ public class NamePlateEntity extends Entity {
     public double dist = 0;
     public UUID targetUUID;
     public boolean showDist = true;
-    public int timeout = 20;
 
     public NamePlateEntity(EntityType<?> p_i48580_1_, World p_i48580_2_) {
         super(p_i48580_1_, p_i48580_2_);
@@ -43,15 +42,6 @@ public class NamePlateEntity extends Entity {
         PlayerEntity targetPlayer = this.level.getPlayerByUUID(this.targetUUID);
         if (targetPlayer != null){
             this.targetPosition = targetPlayer.position();
-        } else {
-            /*
-            this.timeout--;
-            if (this.timeout < 0){
-                ModMain.namePlates.remove(this.targetUUID);
-                this.remove();
-                return;
-            }
-             */
         }
 
         // move to the right place relitive to the viewer

@@ -37,7 +37,7 @@ public class ServerFindConfig {
 
         updateInterval = serverBuilder
                 .comment("Player positions will be synced to clients every x ticks. Higher numbers will cause less lag but reduce accuracy")
-                .defineInRange("updateInterval", 20, 1, Integer.MAX_VALUE);
+                .defineInRange("updateInterval", 10, 1, Integer.MAX_VALUE);
 
         server_config = serverBuilder.build();
     }

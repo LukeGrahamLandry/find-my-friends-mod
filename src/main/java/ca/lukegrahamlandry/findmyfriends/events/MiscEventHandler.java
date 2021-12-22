@@ -23,36 +23,32 @@ import java.util.UUID;
 
 @Mod.EventBusSubscriber(modid = ModMain.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MiscEventHandler {
-    static final double[] pos = new double[]{0};
-    static final Random rand = new Random();
-
     @SubscribeEvent
     public static void onTick(TickEvent.WorldTickEvent event){
         if (event.phase == TickEvent.Phase.END || event.side == LogicalSide.CLIENT) return;
 
         if (event.world.getGameTime() % ServerFindConfig.getUpdateInterval() != 0) return;
 
-        ArrayList<RenderNamePacket> packets = new ArrayList<>();
+        ArrayList<Object> packets = new ArrayList<>();
         for (PlayerEntity player : event.world.players()){
-            if (ServerFindConfig.hideSneakingPlayers.get() && player.isShiftKeyDown()) continue; // skip sneaking people
-
-            packets.add(new RenderNamePacket((ServerPlayerEntity) player));
+            if (ServerFindConfig.hideSneakingPlayers.get() && player.isShiftKeyDown()) {
+                packets.add(new ClearNamePacket((ServerPlayerEntity) player));
+            } else {
+                packets.add(new RenderNamePacket((ServerPlayerEntity) player));
+            }
         }
-        // packets.add(new RenderNamePacket(pos[rand.nextInt(pos.length)], 65, pos[rand.nextInt(pos.length)], UUID.fromString("25399d17-a7e5-4bd3-a70c-39c6ff11b4df"), new StringTextComponent("test name here")));
-
         for (PlayerEntity player : event.world.players()){
-            for (RenderNamePacket packet : packets){
-                if (packet.uuid != player.getUUID()){
-                    if (ServerFindConfig.maxDistance.get() >= 0){
-                        // don't show far players based on config
-                        double dist = player.distanceToSqr(packet.x, packet.y, packet.z);
-                        if (dist > Math.pow(ServerFindConfig.maxDistance.get(), 2)){
-                            continue;
-                        }
+            for (Object packet : packets){
+                if (ServerFindConfig.maxDistance.get() >= 0 && packet instanceof RenderNamePacket){
+                    // don't show far players based on config
+                    RenderNamePacket p = (RenderNamePacket) packet;
+                    double dist = player.distanceToSqr(p.x, p.y, p.z);
+                    if (dist > Math.pow(ServerFindConfig.maxDistance.get(), 2)){
+                        continue;
                     }
-
-                    NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
                 }
+
+                NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
             }
         }
 

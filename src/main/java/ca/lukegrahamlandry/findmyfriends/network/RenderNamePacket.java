@@ -83,7 +83,6 @@ public class RenderNamePacket {
         namePlate.setCustomName(msg.name);
         namePlate.targetUUID = msg.uuid;
         namePlate.showDist = msg.showDist;
-        namePlate.timeout += msg.timeout;
         ModMain.namePlates.put(msg.uuid, namePlate);
 
         // move it to the right location

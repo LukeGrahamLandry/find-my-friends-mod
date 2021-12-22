@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.07'
+version = '1.09'
 group = 'ca.lukegrahamlandry.findmyfriends' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'findmyfriends'
 
