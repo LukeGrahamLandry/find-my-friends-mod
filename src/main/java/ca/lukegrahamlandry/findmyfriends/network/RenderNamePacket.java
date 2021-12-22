@@ -5,15 +5,16 @@ import ca.lukegrahamlandry.findmyfriends.ServerFindConfig;
 import ca.lukegrahamlandry.findmyfriends.entity.NamePlateEntity;
 import ca.lukegrahamlandry.findmyfriends.init.EntityInit;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -24,11 +25,11 @@ public class RenderNamePacket {
     public final double y;
     public final double z;
     public final UUID uuid;
-    public final ITextComponent name;
+    public final Component name;
     public final boolean showDist;
     public final int timeout;
 
-    public RenderNamePacket(double x, double y, double z, UUID uuid, ITextComponent name, boolean showDist, int timeout) {
+    public RenderNamePacket(double x, double y, double z, UUID uuid, Component name, boolean showDist, int timeout) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -38,7 +39,7 @@ public class RenderNamePacket {
         this.timeout = timeout;
     }
 
-    public RenderNamePacket(ServerPlayerEntity player) {
+    public RenderNamePacket(ServerPlayer player) {
         this.x = player.getX();
         this.y = player.getY();
         this.z = player.getZ();
@@ -48,11 +49,11 @@ public class RenderNamePacket {
         this.timeout = ServerFindConfig.getUpdateInterval();
     }
 
-    public RenderNamePacket(PacketBuffer buf) {
+    public RenderNamePacket(FriendlyByteBuf buf) {
         this(buf.readDouble(), buf.readDouble(), buf.readDouble(), buf.readUUID(), buf.readComponent(), buf.readBoolean(), buf.readInt());
     }
 
-    public static void toBytes(RenderNamePacket msg, PacketBuffer buf) {
+    public static void toBytes(RenderNamePacket msg, FriendlyByteBuf buf) {
         buf.writeDouble(msg.x);
         buf.writeDouble(msg.y);
         buf.writeDouble(msg.z);
@@ -71,12 +72,12 @@ public class RenderNamePacket {
 
     @OnlyIn(Dist.CLIENT)
     private static void handlePacket(RenderNamePacket msg) {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if (player == null || player.level == null) return;
-        ClientWorld world = (ClientWorld) player.level;
+        ClientLevel world = (ClientLevel) player.level;
 
         NamePlateEntity oldNamePlate = ModMain.namePlates.get(msg.uuid);
-        if (oldNamePlate != null) oldNamePlate.remove();
+        if (oldNamePlate != null) oldNamePlate.remove(Entity.RemovalReason.DISCARDED);
 
         // making a new one every time so that if you teleported it will be added properly. not sure this is nessisary. consider memoizing with ModMain.namePlates
         NamePlateEntity namePlate = new NamePlateEntity(EntityInit.NAME_PLATE.get(), world);
@@ -87,7 +88,7 @@ public class RenderNamePacket {
 
         // move it to the right location
         namePlate.setCustomName(msg.name);
-        namePlate.targetPosition = new Vector3d(msg.x, msg.y, msg.z);
+        namePlate.targetPosition = new Vec3(msg.x, msg.y, msg.z);
         namePlate.updateLocation();
 
         world.putNonPlayerEntity(namePlate.getId(), namePlate);
