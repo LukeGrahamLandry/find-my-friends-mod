@@ -5,17 +5,17 @@ import ca.lukegrahamlandry.findmyfriends.ServerFindConfig;
 import ca.lukegrahamlandry.findmyfriends.init.NetworkInit;
 import ca.lukegrahamlandry.findmyfriends.network.ClearNamePacket;
 import ca.lukegrahamlandry.findmyfriends.network.RenderNamePacket;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -30,14 +30,14 @@ public class MiscEventHandler {
         if (event.world.getGameTime() % ServerFindConfig.getUpdateInterval() != 0) return;
 
         ArrayList<Object> packets = new ArrayList<>();
-        for (PlayerEntity player : event.world.players()){
+        for (Player player : event.world.players()){
             if (ServerFindConfig.hideSneakingPlayers.get() && player.isShiftKeyDown()) {
-                packets.add(new ClearNamePacket((ServerPlayerEntity) player));
+                packets.add(new ClearNamePacket((ServerPlayer) player));
             } else {
-                packets.add(new RenderNamePacket((ServerPlayerEntity) player));
+                packets.add(new RenderNamePacket((ServerPlayer) player));
             }
         }
-        for (PlayerEntity player : event.world.players()){
+        for (Player player : event.world.players()){
             for (Object packet : packets){
                 if (ServerFindConfig.maxDistance.get() >= 0 && packet instanceof RenderNamePacket){
                     // don't show far players based on config
@@ -48,7 +48,7 @@ public class MiscEventHandler {
                     }
                 }
 
-                NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
+                NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), packet);
             }
         }
 
@@ -58,9 +58,9 @@ public class MiscEventHandler {
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event){
         if (event.getPlayer().level.isClientSide()) return;
 
-        ClearNamePacket packet = new ClearNamePacket((ServerPlayerEntity) event.getPlayer());
-        for (PlayerEntity player : event.getPlayer().level.players()){
-            NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
+        ClearNamePacket packet = new ClearNamePacket((ServerPlayer) event.getPlayer());
+        for (Player player : event.getPlayer().level.players()){
+            NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), packet);
         }
     }
 
@@ -68,13 +68,13 @@ public class MiscEventHandler {
     public static void onDimension(PlayerEvent.PlayerChangedDimensionEvent event){
         if (event.getPlayer().level.isClientSide()) return;
 
-        ClearNamePacket packet = new ClearNamePacket((ServerPlayerEntity) event.getPlayer());
+        ClearNamePacket packet = new ClearNamePacket((ServerPlayer) event.getPlayer());
 
-        World fromWorld = ((ServerWorld)event.getPlayer().level).getServer().getLevel(event.getFrom());
+        Level fromWorld = ((ServerLevel)event.getPlayer().level).getServer().getLevel(event.getFrom());
         if (fromWorld == null) return;
 
-        for (PlayerEntity player : fromWorld.players()){
-            NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
+        for (Player player : fromWorld.players()){
+            NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), packet);
         }
     }
 
@@ -82,11 +82,11 @@ public class MiscEventHandler {
     public static void onDeath(LivingDeathEvent event){
         if (event.getEntity().level.isClientSide()) return;
 
-        if (event.getEntity() instanceof PlayerEntity){
-            ClearNamePacket packet = new ClearNamePacket((ServerPlayerEntity) event.getEntity());
+        if (event.getEntity() instanceof Player){
+            ClearNamePacket packet = new ClearNamePacket((ServerPlayer) event.getEntity());
 
-            for (PlayerEntity player : event.getEntity().level.players()){
-                NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), packet);
+            for (Player player : event.getEntity().level.players()){
+                NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), packet);
             }
         }
 

@@ -3,7 +3,7 @@ package ca.lukegrahamlandry.findmyfriends.events;
 import ca.lukegrahamlandry.findmyfriends.ModMain;
 import ca.lukegrahamlandry.findmyfriends.client.ClientSetup;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.InputEvent;
@@ -29,6 +29,6 @@ public class KeyboardEvents {
 
     @SubscribeEvent
     public static void doname(RenderNameplateEvent event){
-        if (event.getEntity() instanceof PlayerEntity && Minecraft.getInstance().player != null && isActive) event.setResult(Event.Result.DENY);
+        if (event.getEntity() instanceof Player && Minecraft.getInstance().player != null && isActive) event.setResult(Event.Result.DENY);
     }
 }

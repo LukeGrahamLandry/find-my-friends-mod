@@ -1,19 +1,12 @@
 package ca.lukegrahamlandry.findmyfriends.network;
 
 import ca.lukegrahamlandry.findmyfriends.ModMain;
-import ca.lukegrahamlandry.findmyfriends.ServerFindConfig;
-import ca.lukegrahamlandry.findmyfriends.entity.NamePlateEntity;
-import ca.lukegrahamlandry.findmyfriends.init.EntityInit;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -26,15 +19,15 @@ public class ClearNamePacket {
         this.uuid = uuid;
     }
 
-    public ClearNamePacket(ServerPlayerEntity player) {
+    public ClearNamePacket(ServerPlayer player) {
         this.uuid = player.getUUID();
     }
 
-    public ClearNamePacket(PacketBuffer buf) {
+    public ClearNamePacket(FriendlyByteBuf buf) {
         this(buf.readUUID());
     }
 
-    public static void toBytes(ClearNamePacket msg, PacketBuffer buf) {
+    public static void toBytes(ClearNamePacket msg, FriendlyByteBuf buf) {
         buf.writeUUID(msg.uuid);
     }
 
@@ -48,7 +41,7 @@ public class ClearNamePacket {
     @OnlyIn(Dist.CLIENT)
     private static void handlePacket(ClearNamePacket msg) {
         if (ModMain.namePlates.get(msg.uuid) != null){
-            ModMain.namePlates.get(msg.uuid).remove();
+            ModMain.namePlates.get(msg.uuid).remove(Entity.RemovalReason.DISCARDED);
             ModMain.namePlates.remove(msg.uuid);
         }
     }

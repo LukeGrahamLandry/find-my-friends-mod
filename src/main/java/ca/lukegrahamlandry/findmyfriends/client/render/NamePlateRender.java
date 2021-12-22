@@ -2,31 +2,28 @@ package ca.lukegrahamlandry.findmyfriends.client.render;
 
 import ca.lukegrahamlandry.findmyfriends.entity.NamePlateEntity;
 import ca.lukegrahamlandry.findmyfriends.events.KeyboardEvents;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.culling.ClippingHelper;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.client.ForgeHooksClient;
-import net.minecraftforge.common.ForgeMod;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import com.mojang.math.Matrix4f;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 
 public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
-    public NamePlateRender(EntityRendererManager p_i46179_1_) {
+    public NamePlateRender(EntityRendererProvider.Context p_i46179_1_) {
         super(p_i46179_1_);
     }
 
-    public void render(NamePlateEntity entity, float p_225623_2_, float p_225623_3_, MatrixStack matrix, IRenderTypeBuffer renderType, int ticks) {
+    public void render(NamePlateEntity entity, float p_225623_2_, float p_225623_3_, PoseStack matrix, MultiBufferSource renderType, int ticks) {
         if (!KeyboardEvents.isActive) return;
 
-        ITextComponent name = entity.getName();
+        Component name = entity.getName();
 
         // boolean flag = !entity.isDiscrete();
         float f = entity.getBbHeight() + 0.5F;
@@ -38,14 +35,14 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
         Matrix4f matrix4f = matrix.last().pose();
         float f1 = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
         int j = (int)(f1 * 255.0F) << 24;
-        FontRenderer fontrenderer = this.getFont();
+        Font fontrenderer = this.getFont();
         float f2 = (float)(-fontrenderer.width(name) / 2);
 
         fontrenderer.drawInBatch(name, f2, (float)i, 553648127, false, matrix4f, renderType, true, j, ticks);
         fontrenderer.drawInBatch(name, f2, (float)i, -1, false, matrix4f, renderType, false, 0, ticks);
 
         if (entity.showDist){
-            name = new StringTextComponent(Math.round(entity.dist) + " blocks away");
+            name = new TextComponent(Math.round(entity.dist) + " blocks away");
             f2 = (float)(-fontrenderer.width(name) / 2);
             // fontrenderer.drawInBatch(name, f2, (float)i + 2, 553648127, false, matrix4f, renderType, true, j, ticks);
             matrix.scale(0.75F, 0.75F, 0.75F);
@@ -56,7 +53,7 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
     }
 
     @Override
-    public boolean shouldRender(NamePlateEntity p_225626_1_, ClippingHelper p_225626_2_, double p_225626_3_, double p_225626_5_, double p_225626_7_) {
+    public boolean shouldRender(NamePlateEntity p_225626_1_, Frustum p_225626_2_, double p_225626_3_, double p_225626_5_, double p_225626_7_) {
         return true;
     }
 
