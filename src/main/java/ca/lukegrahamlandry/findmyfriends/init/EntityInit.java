@@ -4,7 +4,7 @@ import ca.lukegrahamlandry.findmyfriends.ModMain;
 import ca.lukegrahamlandry.findmyfriends.entity.NamePlateEntity;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.EntityType;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
