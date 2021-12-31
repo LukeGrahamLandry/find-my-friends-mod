@@ -23,12 +23,13 @@ public class KeyboardEvents {
 
         if (ClientSetup.OPEN_GUI.consumeClick()) {
             isActive = !isActive;
+            System.out.println("findmyfriends isActive " + isActive);  // todo remove log spam
             // NetworkInit.INSTANCE.sendToServer(new tooglepacket());
         }
     }
 
     @SubscribeEvent
     public static void doname(RenderNameplateEvent event){
-        if (event.getEntity() instanceof PlayerEntity && Minecraft.getInstance().player != null && isActive) event.setResult(Event.Result.DENY);
+        if (event.getEntity() instanceof PlayerEntity && Minecraft.getInstance().player != null && !Minecraft.getInstance().player.getUUID().equals(event.getEntity().getUUID()) && isActive) event.setResult(Event.Result.DENY);
     }
 }

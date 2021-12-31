@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.09'
+version = '1.10'
 group = 'ca.lukegrahamlandry.findmyfriends' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'findmyfriends'
 
@@ -45,6 +45,8 @@ minecraft {
             workingDirectory project.file('run')
 
             arg "-mixin.config=findmyfriends.mixins.json"
+
+            // property 'fml.earlyprogresswindow', 'false'
 
             // Recommended logging data for a userdev environment
             // The markers can be changed as needed. 
@@ -201,3 +203,5 @@ apply plugin: 'org.spongepowered.mixin'
 mixin {
     add sourceSets.main, "findmyfriends.refmap.json"
 }
+
+apply from: 'https://moddingtutorials.org/applesilicon.gradle'
