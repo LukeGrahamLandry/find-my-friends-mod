@@ -29,6 +29,6 @@ public class KeyboardEvents {
 
     @SubscribeEvent
     public static void doname(RenderNameplateEvent event){
-        if (event.getEntity() instanceof Player && Minecraft.getInstance().player != null && isActive) event.setResult(Event.Result.DENY);
+        if (event.getEntity() instanceof Player && Minecraft.getInstance().player != null && !Minecraft.getInstance().player.getUUID().equals(event.getEntity().getUUID()) && isActive) event.setResult(Event.Result.DENY);
     }
 }

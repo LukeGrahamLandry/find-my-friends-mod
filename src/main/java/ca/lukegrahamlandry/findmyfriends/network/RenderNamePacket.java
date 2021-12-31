@@ -76,6 +76,8 @@ public class RenderNamePacket {
         if (player == null || player.level == null) return;
         ClientLevel world = (ClientLevel) player.level;
 
+        if (msg.uuid.equals(player.getUUID())) return; // dont show own name
+
         NamePlateEntity oldNamePlate = ModMain.namePlates.get(msg.uuid);
         if (oldNamePlate != null) oldNamePlate.remove(Entity.RemovalReason.DISCARDED);
 
