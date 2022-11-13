@@ -11,7 +11,7 @@ loaderVersion="[38,)"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/LukeGrahamLandry/find-my-friends-mod/issues" #optional
 
-license="GPL"
+license="MIT"
 
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory

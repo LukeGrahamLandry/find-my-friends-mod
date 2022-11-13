@@ -1,0 +1,17 @@
+{
+  "loader": "forge",
+  "mc_versions": ["1.18.2", "1.18", "1.18"],
+  "changelogUrl": "https://github.com/LukeGrahamLandry/find-my-friends-mod/commits/forge-1.18",
+  "releaseType": "release",
+  "github": {
+    "owner": "LukeGrahamLandry",
+    "repo": "find-my-friends-mod",
+    "branch": "forge-1.18"
+  },
+  "curseforge": {
+    "id": "557800"
+  },
+  "modrinth": {
+    "id": "urGnJinJ"
+  }
+}

@@ -42,6 +42,7 @@ public class MiscEventHandler {
                     RenderNamePacket p = (RenderNamePacket) packet;
                     double dist = player.distanceToSqr(p.x, p.y, p.z);
                     if (dist > Math.pow(ServerFindConfig.maxDistance.get(), 2)){
+                        NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new ClearNamePacket((ServerPlayer) player));
                         continue;
                     }
                 }

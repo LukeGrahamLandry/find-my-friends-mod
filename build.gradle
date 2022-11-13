@@ -14,7 +14,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.12'
+version = '1.1.13'
 group = 'ca.lukegrahamlandry.findmyfriends' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'findmyfriends'
 
@@ -199,3 +199,4 @@ mixin {
 }
 
 apply from: "https://moddingtutorials.org/applesilicon.gradle"
+apply from: "../mc-utils/publish.gradle"
