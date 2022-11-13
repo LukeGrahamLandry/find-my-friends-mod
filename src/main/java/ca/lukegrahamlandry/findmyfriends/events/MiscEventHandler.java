@@ -22,20 +22,20 @@ import java.util.ArrayList;
 @Mod.EventBusSubscriber(modid = ModMain.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class MiscEventHandler {
     @SubscribeEvent
-    public static void onTick(TickEvent.WorldTickEvent event){
+    public static void onTick(TickEvent.LevelTickEvent event){
         if (event.phase == TickEvent.Phase.END || event.side == LogicalSide.CLIENT) return;
 
-        if (event.world.getGameTime() % ServerFindConfig.getUpdateInterval() != 0) return;
+        if (event.level.getGameTime() % ServerFindConfig.getUpdateInterval() != 0) return;
 
         ArrayList<Object> packets = new ArrayList<>();
-        for (Player player : event.world.players()){
+        for (Player player : event.level.players()){
             if (ServerFindConfig.hideSneakingPlayers.get() && player.isShiftKeyDown()) {
                 packets.add(new ClearNamePacket((ServerPlayer) player));
             } else {
                 packets.add(new RenderNamePacket((ServerPlayer) player));
             }
         }
-        for (Player player : event.world.players()){
+        for (Player player : event.level.players()){
             for (Object packet : packets){
                 if (ServerFindConfig.maxDistance.get() >= 0 && packet instanceof RenderNamePacket){
                     // don't show far players based on config
@@ -55,21 +55,21 @@ public class MiscEventHandler {
 
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event){
-        if (event.getPlayer().level.isClientSide()) return;
+        if (event.getEntity().level.isClientSide()) return;
 
-        ClearNamePacket packet = new ClearNamePacket((ServerPlayer) event.getPlayer());
-        for (Player player : event.getPlayer().level.players()){
+        ClearNamePacket packet = new ClearNamePacket((ServerPlayer) event.getEntity());
+        for (Player player : event.getEntity().level.players()){
             NetworkInit.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), packet);
         }
     }
 
     @SubscribeEvent
     public static void onDimension(PlayerEvent.PlayerChangedDimensionEvent event){
-        if (event.getPlayer().level.isClientSide()) return;
+        if (event.getEntity().level.isClientSide()) return;
 
-        ClearNamePacket packet = new ClearNamePacket((ServerPlayer) event.getPlayer());
+        ClearNamePacket packet = new ClearNamePacket((ServerPlayer) event.getEntity());
 
-        Level fromWorld = ((ServerLevel)event.getPlayer().level).getServer().getLevel(event.getFrom());
+        Level fromWorld = ((ServerLevel)event.getEntity().level).getServer().getLevel(event.getFrom());
         if (fromWorld == null) return;
 
         for (Player player : fromWorld.players()){

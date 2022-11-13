@@ -3,17 +3,15 @@ package ca.lukegrahamlandry.findmyfriends.client.render;
 import ca.lukegrahamlandry.findmyfriends.entity.NamePlateEntity;
 import ca.lukegrahamlandry.findmyfriends.events.KeyboardEvents;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.resources.ResourceLocation;
-import com.mojang.math.Matrix4f;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 
 public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
     public NamePlateRender(EntityRendererProvider.Context p_i46179_1_) {
@@ -42,7 +40,7 @@ public class NamePlateRender extends EntityRenderer<NamePlateEntity> {
         fontrenderer.drawInBatch(name, f2, (float)i, -1, false, matrix4f, renderType, false, 0, ticks);
 
         if (entity.showDist){
-            name = new TextComponent(Math.round(entity.dist) + " blocks away");
+            name = Component.literal(Math.round(entity.dist) + " blocks away");
             f2 = (float)(-fontrenderer.width(name) / 2);
             // fontrenderer.drawInBatch(name, f2, (float)i + 2, 553648127, false, matrix4f, renderType, true, j, ticks);
             matrix.scale(0.75F, 0.75F, 0.75F);
